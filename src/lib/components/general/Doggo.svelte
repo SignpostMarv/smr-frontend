@@ -24,9 +24,13 @@
   $: y.set(actual_mouse_y);
 
   function update_pos(event: MouseEvent) {
+<<<<<<< HEAD
     if (!patting && dogVisible) {
       last_mouse = event;
     }
+=======
+    last_mouse = event;
+>>>>>>> feat: doggo!
   }
 
   function pat() {
