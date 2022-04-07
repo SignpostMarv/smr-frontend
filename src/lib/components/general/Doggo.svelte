@@ -24,13 +24,9 @@
   $: y.set(actual_mouse_y);
 
   function update_pos(event: MouseEvent) {
-<<<<<<< HEAD
     if (!patting && dogVisible) {
       last_mouse = event;
     }
-=======
-    last_mouse = event;
->>>>>>> feat: doggo!
   }
 
   function pat() {
@@ -49,13 +45,13 @@
       await new Promise((resolve) => setTimeout(resolve, 700));
       reset();
     }
+  }
 
-    function reset() {
-      $dogVisible = false;
-      $x = -2000;
-      $y = -1000;
-      patting = false;
-    }
+  function reset() {
+    $dogVisible = false;
+    $x = -2000;
+    $y = -1000;
+    patting = false;
   }
 </script>
 
