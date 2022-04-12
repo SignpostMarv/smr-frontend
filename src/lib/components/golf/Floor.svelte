@@ -1,14 +1,14 @@
 <script lang="js">
   import { Layer } from 'svelte-canvas';
+  import { image_matrix_to_tiles } from '$lib/golf/propTypes';
 
-  export let green_tiles = [];
+  export let tiles = [];
 
   $: render = ({ context, width, height }) => {
-    // t: Tile
-    const draw = (t) => {
-      t.draw(context);
+    const draw = (tile) => {
+      tile.draw(context);
     };
-    green_tiles.forEach(draw);
+    image_matrix_to_tiles(tiles).forEach(draw);
   };
 </script>
 
