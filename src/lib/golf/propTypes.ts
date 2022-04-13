@@ -15,6 +15,98 @@ function get_img(name: string): HTMLImageElement {
   return <HTMLImageElement>img;
 }
 
+declare type wallStretch = [HTMLImageElement | null, 0 | 90 | 180 | 270 | null][];
+
+export function string_to_nested_matrix(string: string, dictionary: { [key: string]: number[][] }): number[][][] {
+  return string
+    .toLowerCase()
+    .split('')
+    .join('|')
+    .split('')
+    .map((e) => dictionary[e]);
+}
+
+export function theme_matrix_to_map(
+  matrix: number[][][],
+  empty: HTMLImageElement,
+  ...themeOptions: HTMLImageElement[]
+): [HTMLImageElement[][], wallStretch[]] {
+  const subMatrixMaxWidths = new Uint16Array(matrix.length);
+  /** @todo not totally figured out */
+  const walls: wallStretch[] = [];
+  const theme: HTMLImageElement[] = [empty, ...themeOptions];
+
+  let width = 0;
+  let height = 0;
+
+  for (let i = 0; i < matrix.length; ++i) {
+    height = Math.max(height, matrix[i].length);
+    subMatrixMaxWidths[i] = 0;
+    for (const matrixRow of matrix[i]) {
+      subMatrixMaxWidths[i] = Math.max(subMatrixMaxWidths[i], matrixRow.length);
+    }
+
+    width += subMatrixMaxWidths[i];
+  }
+
+  const imageMatrix: HTMLImageElement[][] = new Array(height);
+  const numberMatrix: Uint8Array[] = new Array(height);
+  const rowProgress = new Uint16Array(height);
+
+  const top_wall: wallStretch = new Array(Math.max(0, width - 2)).fill([CWall, 90]);
+  const bottom_wall: wallStretch = new Array(Math.max(0, width - 2)).fill([CWall, 270]);
+  const empty_stretch = new Array(Math.max(0, width - 2)).fill([null, null]);
+
+  /*
+  walls.push([
+    [CWallCorner, 0],
+    ...top_wall,
+    [CWallCorner, 90],
+  ]);
+  */
+
+  for (let y = 0; y < height; ++y) {
+    imageMatrix[y] = new Array(width);
+    numberMatrix[y] = new Uint8Array(width);
+
+    for (let x = 0; x < width; ++x) {
+      imageMatrix[y][x] = theme[0];
+    }
+
+    /*
+    if (y > 0 && y < (height - 1)) {
+      walls.push([
+        [CWall, 0],
+        ...empty_stretch,
+        [CWall, 180],
+      ]);
+    }
+    */
+  }
+
+  for (let i = 0; i < matrix.length; ++i) {
+    const subMatrix = matrix[i];
+
+    for (let y = 0; y < subMatrix.length; ++y) {
+      for (let x = 0; x < subMatrix[y].length; ++x) {
+        imageMatrix[y][rowProgress[y] + x] = theme[subMatrix[y][x]] || theme[0];
+      }
+
+      rowProgress[y] += subMatrixMaxWidths[i];
+    }
+  }
+
+  /*
+  walls.push([
+    [CWallCorner, 270],
+    ...bottom_wall,
+    [CWallCorner, 180],
+  ]);
+  */
+
+  return [imageMatrix, walls];
+}
+
 export function image_matrix_to_tiles(matrix: HTMLImageElement[][]): Tile[] {
   const height = matrix.length;
   const width = matrix[0].length;
